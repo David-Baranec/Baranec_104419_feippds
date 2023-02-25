@@ -14,7 +14,11 @@ from time import sleep
 
 tickets: tickets = [0,1,2,3,4,5]
 entering: entering = [0] * 6
-
+"""
+Global arguments:
+    tickets      -- ticket for threads in line, n - number of threads
+    entering     -- True when thread entering in line, default false
+"""
 def process(tid: int, num_runs: int):
     """Simulates a process.
 
@@ -50,7 +54,7 @@ def process(tid: int, num_runs: int):
         # shows code integrity proof
         print(f"Process {tid} is working!")
         print(f"Process {tid} finished a complicated computation!")
-        
+
         # exit critical section
         tickets[tid] = 0
 
