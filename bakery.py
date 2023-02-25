@@ -46,8 +46,8 @@ def process(tid: int, num_runs: int):
 
                 # Wait until all threads with smaller numbers or with the samenumber, but with higher priority, finish their work:
             while tickets[i] != 0 and (tickets[tid] > tickets[i] or (tickets[tid] == tickets[i] and tid ) > i):
-                #print("")
                 continue
+
         # execute critical section
         print(f"Process {tid} runs a complicated computation!")
 
