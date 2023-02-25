@@ -20,3 +20,15 @@ It waits until some other process Pj is choosing its token number.
 
 When the process has finished with its critical section execution, it resets its number variable to 0.
 
+# Explanation: Bakery algorithm is correct solution of mutual exclusion 
+Mutual Exclusion: we know that when no process is executing in its critical section, a process with the lowest number is allowed to enter its critical section. 
+Suppose two processes have the same token number. In that case, the process with the lower process ID among these is selected as the process ID of each process is distinct,
+so at a particular time, there will be only one process executing in its critical section. 
+Thus the requirement of mutual Exclusion is met.
+
+Bounded Waiting: As awaiting, the process will enter its critical section when no other process is in its critical section and
+If its token number is the smallest among other waiting processes.
+If token numbers are the same, it has the lowest process ID among other waiting processes.
+
+Progress: After selecting a token, a waiting process checks whether any other waiting process has higher priority to enter its critical section. 
+If there is no such process, P will immediately enter its critical section. Thus meeting progress requirements.
