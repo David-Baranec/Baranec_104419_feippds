@@ -4,7 +4,7 @@ Bakery Algorithm is an algorithm that basically works as a generalized solution 
  that means for N processes.
 """
 
-__author__ = "David Baranec, Tomáš Vavro"
+__authors__ = "David Baranec, Tomáš Vavro, Yash Boura"
 __email__ = "xbaranecd@stuba.sk"
 __license__ = "MIT"
 __web_sources__ = "https://cppsecrets.com/users/120612197115104981111171149751485164103109971051084699111109/Python-Implementation-of-Bakery-Algorithm.php"
@@ -12,9 +12,8 @@ __web_sources__ = "https://cppsecrets.com/users/12061219711510498111117114975148
 from fei.ppds import Thread
 from time import sleep
 
-tickets: tickets = [0] * 7
-entering: entering = [0] * 7
-
+tickets: tickets = [0,1,2,3,4,5]
+entering: entering = [0] * 6
 
 def process(tid: int, num_runs: int):
     """Simulates a process.
@@ -35,7 +34,6 @@ def process(tid: int, num_runs: int):
             maximum = max(maximum, ticket)
         tickets[tid] = maximum + 1
         entering[tid] = 0
-        sleep(1)
         for i in range(len(tickets)):
 
                 # Wait until thread i receives its number:
@@ -43,18 +41,21 @@ def process(tid: int, num_runs: int):
                  print("waiting on enter")
 
                 # Wait until all threads with smaller numbers or with the samenumber, but with higher priority, finish their work:
-            while tickets[i] != 0 and (tickets[tid] > tickets[i] or (tickets[tid] == tickets[i] and tid > i)):
-                print("")
-
+            while tickets[i] != 0 and (tickets[tid] > tickets[i] or (tickets[tid] == tickets[i] and tid ) > i):
+                #print("")
+                continue
         # execute critical section
         print(f"Process {tid} runs a complicated computation!")
+
         # shows code integrity proof
+        print(f"Process {tid} is working!")
         print(f"Process {tid} finished a complicated computation!")
+        
         # exit critical section
         tickets[tid] = 0
 
 if __name__ == '__main__':
     DEFAULT_NUM_RUNS = 10
-    NUM_THREADS = 3
+    NUM_THREADS = 6
     threads = [Thread(process, i, DEFAULT_NUM_RUNS) for i in range(NUM_THREADS)]
     [t.join() for t in threads]
