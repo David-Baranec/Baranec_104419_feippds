@@ -10,6 +10,9 @@ The global counter displays the number of customers currently being served,
 and all other customers must wait at that time. Once the baker finishes serving the current customer, 
 the next number is displayed. The customer with the next token is now being served.
 
+# To run
+To run this program just run main. In main are set 10 start with 6 threads by default. This params can be modified up on our wish.
+
 # Solution: 
 When a process wishes to enter a critical section, it chooses a greater token number than any earlier number.
 
