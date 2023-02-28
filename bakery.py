@@ -7,7 +7,7 @@ Bakery Algorithm is an algorithm that basically works as a generalized solution 
 __authors__ = "David Baranec, Tomáš Vavro, Yash Boura"
 __email__ = "xbaranecd@stuba.sk"
 __license__ = "MIT"
-__web_sources__ = "https://cppsecrets.com/users/120612197115104981111171149751485164103109971051084699111109/Python-Implementation-of-Bakery-Algorithm.php"
+__web_sources__ = "https://cppsecrets.com/users/120612197115104981111171149751485164103109971051084699111109/Python-Implementation-of-Bakery-Algorithm.php , https://www.javatpoint.com/lamports-bakery-algorithm"
 
 from fei.ppds import Thread
 from time import sleep
@@ -50,9 +50,10 @@ def process(tid: int, num_runs: int):
 
         # execute critical section
         print(f"Process {tid} runs a complicated computation!")
-
+        sleep(1)
         # shows code integrity proof
         print(f"Process {tid} is working!")
+        sleep(2)
         print(f"Process {tid} finished a complicated computation!")
 
         # exit critical section
