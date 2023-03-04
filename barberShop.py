@@ -40,24 +40,24 @@ class Shared(object):
 def get_haircut(i):
     # TODO: Simulate time and print info when customer gets haircut
     print(f"Customer: {i} gets haircut")
-    sleep(2)
+    sleep(randint(3,5))
 
 def cut_hair():
     # TODO: Simulate time and print info when barber cuts customer's hair
     print("Barber: cuts hair!")
-    sleep(4)
+    sleep(randint(3,5))
 
 
 def balk(i):
     # TODO: Represents situation when waiting room is full and print info
     print(f"Customer: {i} waiting room is full!")
-    sleep(3)
+    sleep(randint(5,8))
 
 
 def growing_hair(i):
     # TODO: Represents situation when customer wait after getting haircut. So hair is growing and customer is sleeping for some time
-    print(f"Customer: {i}  his hair is growing!")
-    sleep(3)
+
+    sleep(randint(8,14))
 
 
 def customer(i, shared):
@@ -71,28 +71,31 @@ def customer(i, shared):
         # TODO: Access to waiting room. Could customer enter or must wait? Be careful about counter integrity :)
         shared.mutex.lock()
         if (shared.waiting_room<N ):
-
             print(f"Customer: {i} is in the room!")
             shared.waiting_room+=1
             shared.mutex.unlock()
+
+            # TODO: Rendezvous 1
             shared.customer.signal()
             shared.barber.wait()
 
-
-        # TODO: Rendezvous 1
             get_haircut(i)
+            print(f"Customer: {i} left!")
 
+            # TODO: Rendezvous 2
             shared.barber_done.signal()
             shared.customer_done.wait()
+
+            # TODO: Leave waiting room. Integrity again
             shared.mutex.lock()
             shared.waiting_room -= 1
             shared.mutex.unlock()
             growing_hair(i)
-        # TODO: Rendezvous 2
+
         else:
             shared.mutex.unlock()
             balk(i)
-        # TODO: Leave waiting room. Integrity again
+
 
 
 
@@ -102,11 +105,12 @@ def barber(shared):
     # TODO: Barber cuts customer hair and both wait to complete their work.
 
     while True:
-
+        # TODO: Rendezvous 1
         shared.customer.wait()
         shared.barber.signal()
-        # TODO: Rendezvous 1
+
         cut_hair()
+
         # TODO: Rendezvous 2
         shared.barber_done.wait()
         shared.customer_done.signal()
