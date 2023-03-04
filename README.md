@@ -13,3 +13,5 @@ The sleeping barber problem may lead to a race condition. This problem has occur
 The following solution uses five semaphores, one for customer(for counts of waiting for customers), one for barber(a binary semaphore denoting the state of the barber, i.e., 0 for idle and 1 for busy), these 2 are for deal of starting the hair cutting. Third one is for "customer_done" state and "barber_done" state which are used for synchronization. 
 They ensure that the next customer can only get to the waiting room when the current customer is cut and. Lastly there is a mutual exclusion semaphore, mutex for seats (protects integrity of counter).
 
+# Console output
+![img.png](img.png)
