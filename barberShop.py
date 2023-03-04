@@ -110,7 +110,6 @@ def main():
     for t in customers + [hair_stylist]:
         t.join()
 
-# TODO: Global variables C = 5 numOfCustomers N = 3 sizeOfWaitingRoom
 
 
 if __name__ == "__main__":
