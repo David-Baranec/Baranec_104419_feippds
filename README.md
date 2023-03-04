@@ -1,37 +1,15 @@
 # Baranec_104419_feippds
 
-Assignment 01: Implement Bakery algorithm and explain why it is the most suitable method of mutual exclusion.
+Assignment 02: Implement Sleeping Barber Problem with overtaking
 
-# General explanation: 
-Bakery algorithm explanation: 
-This algorithm is known as the bakery algorithm as this type of scheduling is adopted in bakeries where token numbers are issued to set the order of customers. 
-When a customer enters a bakery store, he gets a unique token number on its entry. 
-The global counter displays the number of customers currently being served, 
-and all other customers must wait at that time. Once the baker finishes serving the current customer, 
-the next number is displayed. The customer with the next token is now being served.
+# Introduction 
+Dijkstra introduced the sleeping barber problem in 1965. This problem is based on a hypothetical scenario where there is a barbershop with one barber. The barbershop is divided into two rooms, the waiting room, and the workroom. The waiting room has n chairs for waiting customers, and the workroom only has a barber chair.
 
-# To run
-To run this program just run main. In main are set 10 start with 6 threads by default. This params can be modified up on our wish.
+Now, if there is no customer, then the barber sleeps in his own chair(barber chair). Whenever a customer arrives, he has to wake up the barber to get his haircut. If there are multiple customers and the barber is cutting a customer's hair, then the remaining customers wait in the waiting room with "n" chairs(if there are empty chairs), or they leave if there are no empty chairs in the waiting room.
 
-# Solution: 
-When a process wishes to enter a critical section, it chooses a greater token number than any earlier number.
+The sleeping barber problem may lead to a race condition. This problem has occurred because of the actions of both barber and customer.
 
-Consider a process Pi wishes to enter a critical section, it sets entering[i] to true to make other processes aware that it is choosing a token number. 
-It then chooses a token number greater than those held by other processes and writes its token number. 
-Then it sets entering[i] to false after reading them. Then It enters a loop to evaluate the status of other processes. 
-It waits until some other process Pj is choosing its token number.
+# Solution
+The following solution uses five semaphores, one for customer(for counts of waiting for customers), one for barber(a binary semaphore denoting the state of the barber, i.e., 0 for idle and 1 for busy), these 2 are for deal of starting the hair cutting. Third one is for "customer_done" state and "barber_done" state which are used for synchronization. 
+They ensure that the next customer can only get to the waiting room when the current customer is cut and. Lastly there is a mutual exclusion semaphore, mutex for seats (protects integrity of counter).
 
-When the process has finished with its critical section execution, it resets its number variable to 0.
-
-# Explanation: Bakery algorithm is correct solution of mutual exclusion 
-Mutual Exclusion: we know that when no process is executing in its critical section, a process with the lowest number is allowed to enter its critical section. 
-Suppose two processes have the same token number. In that case, the process with the lower process ID among these is selected as the process ID of each process is distinct,
-so at a particular time, there will be only one process executing in its critical section. 
-Thus the requirement of mutual Exclusion is met.
-
-Bounded Waiting: As awaiting, the process will enter its critical section when no other process is in its critical section and
-If its token number is the smallest among other waiting processes.
-If token numbers are the same, it has the lowest process ID among other waiting processes.
-
-Progress: After selecting a token, a waiting process checks whether any other waiting process has higher priority to enter its critical section. 
-If there is no such process, P will immediately enter its critical section. Thus meeting progress requirements.

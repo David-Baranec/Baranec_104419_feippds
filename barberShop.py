@@ -9,6 +9,7 @@ Year: 2023
 __authors__ = "Dávid Baranec, Marián Šebeňa"
 __email__ = "xbaranecd@stuba.sk, mariansebena@stuba.sk, xvavro@stuba.sk"
 __license__ = "MIT"
+__web_sources__ = "https://www.codingninjas.com/codestudio/library/sleeping-barber-problem"
 
 from fei.ppds import Mutex, Thread, Semaphore
 from time import sleep
