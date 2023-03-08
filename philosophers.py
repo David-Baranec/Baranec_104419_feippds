@@ -53,16 +53,24 @@ def philosopher(i: int, shared: Shared):
         # Philosopher number 1 prefers left fork, and then he grabs the right one
         if i == 1:
             shared.forks[(i + 1) % NUM_PHILOSOPHERS].lock()
+            print(f" {(i + 1) % NUM_PHILOSOPHERS} fork is taken by {i}")
             shared.forks[i].lock()
+            print(f" {i} fork is taken by {i}")
             eat(i)
             shared.forks[(i + 1) % NUM_PHILOSOPHERS].unlock()
+            print(f" {(i + 1) % NUM_PHILOSOPHERS} fork is left by {i}")
             shared.forks[i].unlock()
+            print(f" {i} fork is left by {i}")
         else:
             shared.forks[i].lock()
+            print(f" {i} fork is taken by {i}")
             shared.forks[(i + 1) % NUM_PHILOSOPHERS].lock()
+            print(f" {(i + 1) % NUM_PHILOSOPHERS} fork is taken by {i}")
             eat(i)
             shared.forks[i].unlock()
+            print(f" {i} fork is left by {i}")
             shared.forks[(i + 1) % NUM_PHILOSOPHERS].unlock()
+            print(f" {(i + 1) % NUM_PHILOSOPHERS} fork is left by {i}")
 
 
 def main():
