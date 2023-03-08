@@ -6,6 +6,8 @@
 __author__ = "Dávid Baranec"
 __email__ = "xbaranecd@stuba.sk, xvavro@stuba.sk"
 __license__ = "MIT"
+__web_sources__ = "https://zerobone.net/blog/cs/dining-philosophers-problem/?fbclid" \
+                  "=IwAR0EqklHeVGqOeV_mwcvFqWx4R0aBGbA6sf92CgjX1NWmDbPoCBPN6rva5U "
 
 from fei.ppds import Thread, Mutex
 from time import sleep
