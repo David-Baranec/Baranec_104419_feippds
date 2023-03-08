@@ -1,6 +1,6 @@
 """This module implements dinning philosophers problem.
 
- No solution is implemented.
+ Left and right-handed philosophers solution implemented.
  """
 
 __author__ = "Dávid Baranec"
