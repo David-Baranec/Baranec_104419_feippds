@@ -3,8 +3,8 @@
  No solution is implemented.
  """
 
-__author__ = "Tomáš Vavro"
-__email__ = "xvavro@stuba.sk"
+__author__ = "Dávid Baranec"
+__email__ = "xbaranecd@stuba.sk, xvavro@stuba.sk"
 __license__ = "MIT"
 
 from fei.ppds import Thread, Mutex
@@ -50,13 +50,19 @@ def philosopher(i: int, shared: Shared):
         shared -- shared data
     """
     for _ in range(NUM_RUNS):
-        think(i)
-        # get forks
-        shared.forks[i].lock()
-        shared.forks[(i + 1) % NUM_PHILOSOPHERS].lock()
-        eat(i)
-        shared.forks[i].unlock()
-        shared.forks[(i + 1) % NUM_PHILOSOPHERS].unlock()
+        # Philosopher number 1 prefers left fork, and then he grabs the right one
+        if i == 1:
+            shared.forks[(i + 1) % NUM_PHILOSOPHERS].lock()
+            shared.forks[i].lock()
+            eat(i)
+            shared.forks[(i + 1) % NUM_PHILOSOPHERS].unlock()
+            shared.forks[i].unlock()
+        else:
+            shared.forks[i].lock()
+            shared.forks[(i + 1) % NUM_PHILOSOPHERS].lock()
+            eat(i)
+            shared.forks[i].unlock()
+            shared.forks[(i + 1) % NUM_PHILOSOPHERS].unlock()
 
 
 def main():
