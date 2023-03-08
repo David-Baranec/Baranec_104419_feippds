@@ -9,6 +9,7 @@ __license__ = "MIT"
 
 from fei.ppds import Thread, Mutex
 from time import sleep
+from fei.ppds import print
 
 NUM_PHILOSOPHERS: int = 5
 NUM_RUNS: int = 10  # number of repetitions of think-eat cycle of philosophers
@@ -52,7 +53,7 @@ def philosopher(i: int, shared: Shared):
         think(i)
         # get forks
         shared.forks[i].lock()
-        shared.forks[(i+1) % NUM_PHILOSOPHERS].lock()
+        shared.forks[(i + 1) % NUM_PHILOSOPHERS].lock()
         eat(i)
         shared.forks[i].unlock()
         shared.forks[(i + 1) % NUM_PHILOSOPHERS].unlock()
