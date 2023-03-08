@@ -52,6 +52,7 @@ def philosopher(i: int, shared: Shared):
         shared -- shared data
     """
     for _ in range(NUM_RUNS):
+        think(i)
         # Philosopher number 1 prefers left fork, and then he grabs the right one
         if i == 1:
             shared.forks[(i + 1) % NUM_PHILOSOPHERS].lock()
