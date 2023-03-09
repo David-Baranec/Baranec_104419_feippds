@@ -38,5 +38,9 @@ If there is philosopher 1 on the move (line 57), he to the same but starts with 
 
 # Conclusion
 If we compare the main parts of programs `philosoph.py` and `philosopher.py`, and compare out prints, we can see, that if we consider problem 
-of starving, then customer access is more effective and faster and philosophers have to make less effort to eat. But definitely all philosophers will eat in certain time.
-That means they don't risk starving. 
+of starving, then waiter solution is more effective and faster and philosophers have to make less effort to eat. But definitely all philosophers will eat in certain time.
+That means they don't risk starving. Experiments showed, that if waiter has no popular philosopher, then all philosophers eats more regularly, than with left-handed philosopher.
+
+We can also change our condition from one left-handed to every odd left-handed. Simply change condition `if (i==1):` (line 57) to `if i % 2 == 0:`. 
+This improves the chance of all philosopher to eat more regularly, however it wouldn't be as effective as using strict order. 
+Although we want to give him chance to choose, the right time for eating, than this can be good solution for them.
