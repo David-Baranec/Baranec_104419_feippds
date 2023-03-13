@@ -24,8 +24,9 @@ class Shared:
         self.servings = NUM_SERVINGS
         self.fullpot = Semaphore(0)
         self.emptypot = Semaphore(0)
-        self.barier1 = Semaphore(NUM_SAVAGES)
-        self.barier2 = Semaphore(NUM_SAVAGES)
+        self.barier1 = Semaphore(0)
+        self.barier2 = Semaphore(0)
+        self.count = 0
 
 
 def getservingfrompot(i: int, shared: Shared):
@@ -35,7 +36,7 @@ def getservingfrompot(i: int, shared: Shared):
         i -- savage's id
         shared -- shared data
     """
-    if shared.servings == 0:
+    if shared.servings <= 0:
         shared.emptypot.signal()
     else:
         print(f"savage {i} is eating!")
@@ -48,6 +49,7 @@ def putservinginpot(shared: Shared):
     while shared.servings < NUM_SERVINGS:
         shared.servings += 1
         print("Meal added to pot")
+        sleep(0.1)
 
 
 def savage(i: int, shared: Shared):
@@ -58,13 +60,26 @@ def savage(i: int, shared: Shared):
         shared -- shared data
     """
     while True:
-        shared.barier1.wait("prisli sme na veceru", i)
         shared.mutex.lock()
+        print(f"savage {i} has come to dinner!")
+        shared.count += 1
+        if shared.count == NUM_SAVAGES:
+            print("All of us are here")
+            shared.barier1.signal(NUM_SAVAGES)
+        shared.mutex.unlock()
+        shared.barier1.wait()
+
         if shared.servings == 0:
             shared.emptypot.signal()
             shared.fullpot.wait()
         getservingfrompot(i, shared)
+
+        shared.mutex.lock()
+        shared.count -= 1
+        if shared.count == 0:
+            shared.barier2.signal(NUM_SAVAGES)
         shared.mutex.unlock()
+        shared.barier2.wait()
 
 
 def cook(shared: Shared):
