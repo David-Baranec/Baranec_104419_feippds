@@ -12,6 +12,7 @@ from fei.ppds import Thread, Mutex, Semaphore
 from time import sleep
 from fei.ppds import print
 
+NUM_COOKS: int = 2
 NUM_SAVAGES: int = 5
 NUM_SERVINGS: int = 12
 
@@ -21,7 +22,7 @@ class Shared:
     def __init__(self):
         """Initialize an instance of Shared."""
         self.mutex = Mutex()
-        self.servings = NUM_SERVINGS
+        self.servings = 0
         self.fullpot = Semaphore(0)
         self.emptypot = Semaphore(0)
         self.barier1 = Semaphore(0)
@@ -36,19 +37,19 @@ def getservingfrompot(i: int, shared: Shared):
         i -- savage's id
         shared -- shared data
     """
-    if shared.servings <= 0:
-        shared.emptypot.signal()
-    else:
-        print(f"savage {i} is eating!")
-        shared.servings -= 1
+    shared.mutex.lock()
+    shared.servings -= 1
+    shared.mutex.unlock()
+    print(f"savage {i} is eating!")
     sleep(0.1)
 
 
-def putservinginpot(shared: Shared):
-
+def putservinginpot(i: int, shared: Shared):
     while shared.servings < NUM_SERVINGS:
+        shared.mutex.lock()
         shared.servings += 1
-        print("Meal added to pot")
+        shared.mutex.unlock()
+        print(f"Meal {shared.servings} was added to pot by {i} cook!")
         sleep(0.1)
 
 
@@ -61,43 +62,48 @@ def savage(i: int, shared: Shared):
     """
     while True:
         shared.mutex.lock()
-        print(f"savage {i} has come to dinner!")
         shared.count += 1
+        shared.mutex.unlock()
+
         if shared.count == NUM_SAVAGES:
             print("All of us are here")
             shared.barier1.signal(NUM_SAVAGES)
-        shared.mutex.unlock()
-        shared.barier1.wait()
 
-        if shared.servings == 0:
+        shared.barier1.wait()
+        if shared.servings > 0:
+            getservingfrompot(i, shared)
+        else:
             shared.emptypot.signal()
             shared.fullpot.wait()
-        getservingfrompot(i, shared)
-
         shared.mutex.lock()
         shared.count -= 1
+        shared.mutex.unlock()
+
         if shared.count == 0:
             shared.barier2.signal(NUM_SAVAGES)
-        shared.mutex.unlock()
         shared.barier2.wait()
 
 
-def cook(shared: Shared):
+def cook(i: int, shared: Shared):
     while True:
         shared.emptypot.wait()
-        putservinginpot(shared)
+        putservinginpot(i, shared)
         shared.fullpot.signal()
 
 
 def main():
     """Run main."""
     shared: Shared = Shared()
-    cook_thread: Thread = Thread(cook, shared)
-
+    #cook_thread: Thread = Thread(cook, shared)
+    cooks: list[Thread] = [
+        Thread(cook, i, shared) for i in range(NUM_COOKS)
+    ]
     savages: list[Thread] = [
         Thread(savage, i, shared) for i in range(NUM_SAVAGES)
     ]
-    cook_thread.join()
+    #cook_thread.join()
+    for p in cooks:
+        p.join()
     for p in savages:
         p.join()
 
