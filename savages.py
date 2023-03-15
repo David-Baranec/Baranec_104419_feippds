@@ -1,6 +1,6 @@
 """This module implements dinning savages problem.
 
- #####################
+ Savages are waiting for all from tribe to start eating, also wait until the pot is filled fully.
  """
 
 __author__ = "Dávid Baranec"
@@ -44,9 +44,16 @@ def getservingfrompot(i: int, shared: Shared):
 
 
 def putservinginpot(i: int, shared: Shared):
-        shared.servings += 1
-        sleep(0.2)
-        print(f"Meal {shared.servings} was added to pot by chef {i} !")
+    """Simulate adding meal to pot.
+
+    Args:
+        i -- cook's id
+        shared -- shared data
+    """
+    shared.servings += 1
+    sleep(0.2)
+    print(f"Meal {shared.servings} was added to pot by chef {i} !")
+
 
 def savage(i: int, shared: Shared):
     """Run savage's code.
@@ -85,6 +92,12 @@ def savage(i: int, shared: Shared):
 
 
 def cook(i: int, shared: Shared):
+    """Run cook's code.
+
+        Args:
+            i -- cook's id
+            shared -- shared data
+        """
     while True:
         shared.emptypot.wait()
         shared.mutex.lock()
@@ -100,8 +113,6 @@ def cook(i: int, shared: Shared):
             shared.mutex.unlock()
 
         shared.fullpot.signal()
-
-
 
 
 def main():
