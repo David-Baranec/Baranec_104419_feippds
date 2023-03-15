@@ -22,7 +22,7 @@ class Shared:
     def __init__(self):
         """Initialize an instance of Shared."""
         self.mutex = Mutex()
-        self.servings = 0
+        self.servings = NUM_SERVINGS
         self.fullpot = Semaphore(0)
         self.emptypot = Semaphore(0)
         self.barier1 = Semaphore(0)
@@ -37,21 +37,16 @@ def getservingfrompot(i: int, shared: Shared):
         i -- savage's id
         shared -- shared data
     """
-    shared.mutex.lock()
+    print(f"savage {i} takes meal!")
     shared.servings -= 1
-    shared.mutex.unlock()
     print(f"savage {i} is eating!")
-    sleep(0.1)
+    sleep(0.2)
 
 
 def putservinginpot(i: int, shared: Shared):
-    while shared.servings < NUM_SERVINGS:
-        shared.mutex.lock()
         shared.servings += 1
-        shared.mutex.unlock()
-        print(f"Meal {shared.servings} was added to pot by {i} cook!")
-        sleep(0.1)
-
+        sleep(0.2)
+        print(f"Meal {shared.servings} was added to pot by chef {i} !")
 
 def savage(i: int, shared: Shared):
     """Run savage's code.
@@ -66,15 +61,20 @@ def savage(i: int, shared: Shared):
         shared.mutex.unlock()
 
         if shared.count == NUM_SAVAGES:
-            print("All of us are here")
+            print("\nAll of us are here\n")
             shared.barier1.signal(NUM_SAVAGES)
 
         shared.barier1.wait()
+        shared.mutex.lock()
         if shared.servings > 0:
             getservingfrompot(i, shared)
+            shared.mutex.unlock()
+
         else:
+            shared.mutex.unlock()
             shared.emptypot.signal()
             shared.fullpot.wait()
+
         shared.mutex.lock()
         shared.count -= 1
         shared.mutex.unlock()
@@ -87,21 +87,32 @@ def savage(i: int, shared: Shared):
 def cook(i: int, shared: Shared):
     while True:
         shared.emptypot.wait()
-        putservinginpot(i, shared)
+        shared.mutex.lock()
+        if shared.servings == 0:
+            print(" Pot is empty Starts cooking")
+        shared.mutex.unlock()
+
+        while shared.servings < NUM_SERVINGS:
+            shared.mutex.lock()
+            if shared.servings < NUM_SERVINGS:
+                putservinginpot(i, shared)
+                sleep(0.1)
+            shared.mutex.unlock()
+
         shared.fullpot.signal()
+
+
 
 
 def main():
     """Run main."""
     shared: Shared = Shared()
-    #cook_thread: Thread = Thread(cook, shared)
     cooks: list[Thread] = [
         Thread(cook, i, shared) for i in range(NUM_COOKS)
     ]
     savages: list[Thread] = [
         Thread(savage, i, shared) for i in range(NUM_SAVAGES)
     ]
-    #cook_thread.join()
     for p in cooks:
         p.join()
     for p in savages:
