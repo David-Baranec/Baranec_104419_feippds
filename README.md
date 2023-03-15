@@ -42,6 +42,7 @@ When pot is full, they wait until the pot be empty again (line 102).
 # Console output
 
 ![img.png](img.png)
+
 ![img_1.png](img_1.png)
 
 
