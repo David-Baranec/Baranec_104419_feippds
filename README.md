@@ -45,6 +45,31 @@ When pot is full, they wait until the pot be empty again (line 102).
 
 ![img_1.png](img_1.png)
 
+# Synchronization examples 
+I use multiple means such as Mutex (lock), semaphores for signalization, and barriers for synchronized entry and leaving the table.
+
+
+![img_2.png](img_2.png)
+
+Mutex is used multiple times to ensure mutual exclusion.
+
+Semaphores of full and empty pot use savages and cooks to see who is on the move.
+Cooks wait for emptyPot signal and then when they fill the pot, savages wait until fullPot gives signal.
+
+![img_3.png](img_3.png)
+
+Barriers are used to represent a collective of savages and their habit with eating together.
+They wait for each other in front of the pot (line 74) and after all are by the pot (line 70) they take a meal and start eating.
+
+![img_4.png](img_4.png)
+
+When they finish eating they leave and until all of them are not finished eating (line 86), they don't start eating again.
+
+![img_5.png](img_5.png)
+
+If all are done (line 89), or there are no more portions in pot, savages who had started eating, finish and together with other leave the pot.
+When pot is filled again they come to pot and repeat their daily routine.
+
 
 
 
