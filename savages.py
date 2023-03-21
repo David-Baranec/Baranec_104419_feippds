@@ -12,7 +12,7 @@ from fei.ppds import Thread, Mutex, Semaphore
 from time import sleep
 from fei.ppds import print
 
-NUM_COOKS: int = 2
+NUM_COOKS: int = 3
 NUM_SAVAGES: int = 5
 NUM_SERVINGS: int = 12
 
@@ -110,6 +110,8 @@ def cook(i: int, shared: Shared):
             if shared.servings < NUM_SERVINGS:
                 putservinginpot(i, shared)
                 sleep(0.1)
+                if shared.servings == NUM_SERVINGS:
+                    print(" Pot is FUll")
             shared.mutex.unlock()
 
         shared.fullpot.signal()
@@ -124,9 +126,7 @@ def main():
     savages: list[Thread] = [
         Thread(savage, i, shared) for i in range(NUM_SAVAGES)
     ]
-    for p in cooks:
-        p.join()
-    for p in savages:
+    for p in cooks + savages:
         p.join()
 
 
