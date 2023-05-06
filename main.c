@@ -9,11 +9,19 @@
 int main(int argc, char** argv) {
     int my_rank, comm_size;
     int i, j;
-
-
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
+    int n;
+    // Allocate memory for the follower counts array
+    int *follower_counts = (int *) malloc(n * sizeof(int));
+    char row[100];
+    int count;
+    int my_sum = 0;
     //Control outprint of ranks
-    //printf("rank %d out of %d processors\n", my_rank, comm_size);
+    printf("rank %d out of %d processors\n", my_rank, comm_size);
 
+    if (my_rank == 0) {
     // Open the input file for reading
     FILE *input_file = fopen("input.txt", "r");
     if (input_file == NULL) {
@@ -22,19 +30,17 @@ int main(int argc, char** argv) {
     }
 
     // Read in the number of vertices
-    int n;
+
     fscanf(input_file, "%d", &n);
 
-    // Allocate memory for the follower counts array
-    int *follower_counts = (int *) malloc(n * sizeof(int));
+
     if (follower_counts == NULL) {
         fprintf(stderr, "Error: could not allocate memory\n");
         exit(1);
     }
 
     // Read in the follower data from the input file and store it in the follower counts array
-    char row[100];
-    int count;
+
     for (i = 0; i < n; i++) {
         fscanf(input_file, "%s", row);
         count = 0;
@@ -48,17 +54,15 @@ int main(int argc, char** argv) {
 
     // Close the input file
     fclose(input_file);
-    MPI_Init(&argc, &argv);
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
+
     // Compute the sum of follower counts across all nodes
-    int my_sum = 0;
+
     for (i = my_rank; i < n; i += comm_size) {
         my_sum += follower_counts[i];
     }
 
     // Print the number of followers for each vertex
-    if (my_rank == 0) {
+
         printf("Number of followers for each vertex:\n");
         for (i = 0; i < n; i++) {
             printf("Vertex %d: %d\n", i, follower_counts[i]);
