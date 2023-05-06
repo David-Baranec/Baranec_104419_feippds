@@ -5,6 +5,24 @@
 
 #define DAMPING_FACTOR 0.85
 #define TOLERANCE 0.0001
+int cmpfunc(const void *a, const void *b) {
+    const double *da = *(const double **)a;
+    const double *db = *(const double **)b;
+    return (*db > *da) - (*db < *da);
+}
+
+void sort_indexes_desc(double *arr, int *idx, int n) {
+    double **p = malloc(n * sizeof(double *));
+    for (int i = 0; i < n; i++) {
+        p[i] = &arr[i];
+        idx[i] = i;
+    }
+    qsort(p, n, sizeof(double *), cmpfunc);
+    for (int i = 0; i < n; i++) {
+        idx[i] = p[i] - arr;
+    }
+    free(p);
+}
 
 int main(int argc, char** argv) {
     int my_rank, comm_size;
@@ -13,8 +31,7 @@ int main(int argc, char** argv) {
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
     int n;
-    // Allocate memory for the follower counts array
-    int *follower_counts = (int *) malloc(n * sizeof(int));
+
     char row[1000];
     int count;
     int my_sum = 0;
@@ -33,7 +50,8 @@ int main(int argc, char** argv) {
 
     fscanf(input_file, "%d", &n);
 
-
+// Allocate memory for the follower counts array
+    int *follower_counts = (int *) malloc(n * sizeof(int));
     if (follower_counts == NULL) {
         fprintf(stderr, "Error: could not allocate memory\n");
         exit(1);
@@ -141,6 +159,16 @@ int main(int argc, char** argv) {
         }
         printf("\n");
         printf("Sum in pageRank %f ", fin);
+
+        int idx[n];
+
+        sort_indexes_desc(page_rank, idx, n);
+
+        printf("\nIndex order in descending order based on value: ");
+        for (int i = 0; i < n; i++) {
+            printf("%d ", idx[i]);
+        }
+        printf("\n");
     }
 
     free(follower_counts);
