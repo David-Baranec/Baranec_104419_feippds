@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <mpi.h>
 #include <math.h>
+#include <time.h>
 
 #define DAMPING_FACTOR 0.85
 #define TOLERANCE 0.0001
@@ -25,18 +26,23 @@ void sort_indexes_desc(double *arr, int *idx, int n) {
 }
 
 int main(int argc, char** argv) {
+    double start_time, end_time, elapsed_time;
+    clock_t start_time_total, end_time_total;
+    start_time = clock();
+    double total_time;
     int my_rank, comm_size;
     int i, j;
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
     MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
+    start_time = MPI_Wtime();
     int n;
 
     char row[1000];
     int count;
     int my_sum = 0;
     //Control outprint of ranks
-    printf("rank %d out of %d processors\n", my_rank, comm_size);
+    //printf("rank %d out of %d processors\n", my_rank, comm_size);
 
 
     // Open the input file for reading
@@ -173,7 +179,18 @@ int main(int argc, char** argv) {
 
     free(follower_counts);
     free(page_rank);
+    end_time = MPI_Wtime();
+    elapsed_time = end_time - start_time;
+
+    printf("\nRank %d: Time taken = %f seconds", my_rank, elapsed_time);
+    end_time_total = clock(); // Record the ending time
+    if (my_rank == 0) {
+        total_time =
+                ((double) (end_time_total - start_time_total)) / CLOCKS_PER_SEC; // Calculate the total time in seconds
+        printf("\nTotal execution time: %f seconds\n", total_time);
+    }
     MPI_Finalize();
+
     return 0;
 }
 
