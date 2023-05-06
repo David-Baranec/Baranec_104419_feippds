@@ -15,7 +15,7 @@ int main(int argc, char** argv) {
     int n;
     // Allocate memory for the follower counts array
     int *follower_counts = (int *) malloc(n * sizeof(int));
-    char row[100];
+    char row[1000];
     int count;
     int my_sum = 0;
     //Control outprint of ranks
@@ -44,7 +44,7 @@ int main(int argc, char** argv) {
     for (i = 0; i < n; i++) {
         fscanf(input_file, "%s", row);
         count = 0;
-        for (j = 0; j < 20; j++) {
+        for (j = 0; j < n; j++) {
             if (row[j] == '1') {
                 count++;
             }
@@ -131,14 +131,16 @@ int main(int argc, char** argv) {
         free(incoming_scores);
         free(new_page_rank);
     }
-
+    double fin=0;
     // Print the final Page Rank scores on the root process
     if (my_rank == 0) {
         printf("Page Rank scores:\n");
         for (i = 0; i < n; i++) {
             printf("%f ", page_rank[i]);
+            fin+=page_rank[i];
         }
         printf("\n");
+        printf("Sum in pageRank %f ", fin);
     }
 
     free(follower_counts);
