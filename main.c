@@ -21,7 +21,7 @@ int main(int argc, char** argv) {
     //Control outprint of ranks
     printf("rank %d out of %d processors\n", my_rank, comm_size);
 
-    if (my_rank == 0) {
+
     // Open the input file for reading
     FILE *input_file = fopen("input.txt", "r");
     if (input_file == NULL) {
@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
     }
 
     // Print the number of followers for each vertex
-
+    if (my_rank == 0) {
         printf("Number of followers for each vertex:\n");
         for (i = 0; i < n; i++) {
             printf("Vertex %d: %d\n", i, follower_counts[i]);
