@@ -9,12 +9,10 @@
 int main(int argc, char** argv) {
     int my_rank, comm_size;
     int i, j;
-    MPI_Init(&argc, &argv);
-    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
-    MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
+
 
     //Control outprint of ranks
-    printf("rank %d out of %d processors\n", my_rank, comm_size);
+    //printf("rank %d out of %d processors\n", my_rank, comm_size);
 
     // Open the input file for reading
     FILE *input_file = fopen("input.txt", "r");
@@ -34,15 +32,25 @@ int main(int argc, char** argv) {
         exit(1);
     }
 
-    // Read in the vertex and follower data from the input file
-    int vertex, follower;
-    while (fscanf(input_file, "%d %d", &vertex, &follower) == 2) {
-        follower_counts[vertex]++; // Increment the follower count for the vertex
+    // Read in the follower data from the input file and store it in the follower counts array
+    char row[100];
+    int count;
+    for (i = 0; i < n; i++) {
+        fscanf(input_file, "%s", row);
+        count = 0;
+        for (j = 0; j < 20; j++) {
+            if (row[j] == '1') {
+                count++;
+            }
+        }
+        follower_counts[i] = count;
     }
 
     // Close the input file
     fclose(input_file);
-
+    MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &my_rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &comm_size);
     // Compute the sum of follower counts across all nodes
     int my_sum = 0;
     for (i = my_rank; i < n; i += comm_size) {
@@ -50,11 +58,12 @@ int main(int argc, char** argv) {
     }
 
     // Print the number of followers for each vertex
-    printf("Number of followers for each vertex:\n");
-    for (i = 0; i < n; i++) {
-        printf("Vertex %d: %d\n", i, follower_counts[i]);
+    if (my_rank == 0) {
+        printf("Number of followers for each vertex:\n");
+        for (i = 0; i < n; i++) {
+            printf("Vertex %d: %d\n", i, follower_counts[i]);
+        }
     }
-
     // Compute the total sum across all nodes using MPI_Reduce
     int total_sum = 0;
     MPI_Reduce(&my_sum, &total_sum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
