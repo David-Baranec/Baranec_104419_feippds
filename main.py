@@ -25,8 +25,9 @@ def grayscale_kernel(image_gpu):
 
 
 def main():
-    """ Main program loading data and processing  cpu and gpu transformation to grayscale comparing time of operations."""
-    name = "forest"
+    """ Main program loading data and processing cpu and gpu transformation
+    to grayscale comparing time of operations."""
+    name = "turtle"
     image = Image.open('images/'+name+'.jpg')
     # Convert the image to a NumPy array
     image_np = np.array(image)
@@ -59,11 +60,13 @@ def main():
     image_gray_gpu = image_gpu.copy_to_host()
 
     # Create a PIL image from the grayscale array
+    image_gray_cpu = Image.fromarray(image_gray_cpu.astype(np.uint8))
     image_gray_pil = Image.fromarray(image_gray_gpu.astype(np.uint8))
 
     # Save the grayscale image
     # Create a PIL image from the grayscale array
-    image_gray_pil.save('images/output_'+name+'.jpg')
+    image_gray_cpu.save('images/output_cpu_' + name + '.jpg')
+    image_gray_pil.save('images/output_gpu_'+name+'.jpg')
 
     # Print the execution times
     print("CPU execution time:", end_time_cpu - start_time_cpu, "seconds")
