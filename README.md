@@ -23,3 +23,5 @@ In table are results for time performance in seconds based on frame resolution.
 
 Comparison table does not show as good results as we have expected in theoretical model. But this is caused by emulator for GPU, which does not give enough performance as full computing performance of GPU.
 However, these results are not fixed times, they represent average time  of computing. 
+# TO RUN
+Install package `numba`. After installation add `NUMBA_ENABLE_CUDASIM=1` to environment variables and run `main.py`.  
