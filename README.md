@@ -16,3 +16,10 @@ The code calculates the grayscale value by multiplying each color component (r, 
 The weights used here are the standard luminance coefficients often used in image processing: 0.299 for red, 0.587 for green, and 0.114 for blue. 
 These values represent the human perception of brightness for each color channel.
 
+# Results
+The main perform computation for CPU in serial mode and also GPU computation using NUMBA. Both are stored in separate files with appropriate name. 
+In table are results for time performance in seconds based on frame resolution.
+![comparison_table.png](img.png)
+
+Comparison table does not show as good results as we have expected in theoretical model. But this is caused by emulator for GPU, which does not give enough performance as full computing performance of GPU.
+However, these results are not fixed times, they represent average time  of computing. 
