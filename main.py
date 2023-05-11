@@ -26,7 +26,7 @@ def grayscale_kernel(image_gpu):
 
 def main():
     """ Main program loading data and processing  cpu and gpu transformation to grayscale comparing time of operations."""
-    name = "city"
+    name = "forest"
     image = Image.open('images/'+name+'.jpg')
     # Convert the image to a NumPy array
     image_np = np.array(image)
