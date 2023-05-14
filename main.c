@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <mpi.h>
 
-#define N 30
+#define N 500
 #define D 0.85
 
 int* get_counts_send(int processes_count, int vertices_count) {
@@ -45,11 +45,13 @@ void loadMatrixFromFile(const char* filename, int matrix[N][N]) {
 
 }
 int main(int argc, char** argv) {
-    // Inicializácia MPI enviromentu
+    // MPI inviroment initialization
     MPI_Init(&argc, &argv);
     int process_id, processes_count;
     MPI_Comm_rank(MPI_COMM_WORLD, &process_id);
     MPI_Comm_size(MPI_COMM_WORLD, &processes_count);
+    double start_time, end_time, execution_time;
+    start_time = MPI_Wtime();
     double* ranks = NULL;
     int** graph_matrix = NULL;
     int* partitions_counts = NULL;
@@ -70,14 +72,14 @@ int main(int argc, char** argv) {
             graph_matrix[f][g] = matrix[f][g];
 
 
-    // Inicilizácia pola rank-ov
+    // Rank array init
     ranks = (double*) malloc(vertices_count * sizeof(double));
     int m;
     for (m = 0; m < vertices_count; m++) {
         ranks[m] = 1.0 / vertices_count;
     }
 
-    // Partitioning dát
+    // data partition
     partitions_counts = get_counts_send(processes_count, vertices_count);
     partitions_indexes = get_displacements(processes_count, partitions_counts);
     int partition_vertices_count = partitions_counts[process_id];
@@ -87,15 +89,15 @@ int main(int argc, char** argv) {
     double tmp_out_links_count;
     int i, j, k, l;
 
-    // PageRank algoritmus - iterácie
+    // Page Rank algorithm iteration
     for (k = 0; k < iterations_count; k++) {
 
-        // MPI Scatter - distribúcia (odoslanie) dát (rank-ov) procesom
+        // MPI Scatter - distribute data to processes
         MPI_Scatterv(ranks, partitions_counts, partitions_indexes, MPI_DOUBLE,
                      partition_ranks, partition_vertices_count, MPI_DOUBLE,
                      0, MPI_COMM_WORLD);
 
-        // PageRank algoritmus - výpočet
+        // PageRank algorithm
         for (i = partition_vertex_index; i < partition_vertex_index + partition_vertices_count; i++) {
             tmp_ranks[i - partition_vertex_index] = 0.0;
             for (j = 0; j < vertices_count; j++) {
@@ -110,7 +112,7 @@ int main(int argc, char** argv) {
             partition_ranks[i - partition_vertex_index] = (1.0 - D) + D * tmp_ranks[i - partition_vertex_index];
         }
 
-        // MPI Allgater - distribúcia (prijatie) dát (rank-ov) procesmi
+        // MPI Allgather - accept data from processes
         MPI_Allgatherv(partition_ranks, partition_vertices_count, MPI_DOUBLE,
                        ranks, partitions_counts, partitions_indexes, MPI_DOUBLE,
                        MPI_COMM_WORLD);
@@ -134,8 +136,27 @@ int main(int argc, char** argv) {
     free(graph_matrix);
     free(ranks);
 
-    // De-inicializácia MPI enviromentu
-    MPI_Finalize();
+    end_time = MPI_Wtime(); // Record the ending time
+
+    execution_time = end_time - start_time;
+
+    // Gather execution time from all processes to process 0
+    double* all_execution_times = NULL;
+    if (process_id == 0) {
+        all_execution_times = (double*)malloc(processes_count * sizeof(double));
+    }
+    MPI_Gather(&execution_time, 1, MPI_DOUBLE, all_execution_times, 1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
+
+    // Process 0 prints the execution time
+    if (process_id == 0) {
+        printf("Execution time: %f seconds\n", execution_time);
+
+        // Additional analysis or processing with the gathered execution times if needed
+
+        free(all_execution_times);
+    }
+    //Deinitialization of MPI enviroment
+        MPI_Finalize();
 
     return 0;
 }
