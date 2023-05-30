@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <mpi.h>
 
-#define N 500
+#define N 8
 #define D 0.85
 
 int* get_counts_send(int processes_count, int vertices_count) {
@@ -109,7 +109,7 @@ int main(int argc, char** argv) {
                     tmp_ranks[i - partition_vertex_index] += ranks[j] / tmp_out_links_count;
                 }
             }
-            partition_ranks[i - partition_vertex_index] = (1.0 - D) + D * tmp_ranks[i - partition_vertex_index];
+            partition_ranks[i - partition_vertex_index] = ((1.0 - D) + D * tmp_ranks[i - partition_vertex_index])/tmp_out_links_count;
         }
 
         // MPI Allgather - accept data from processes
@@ -125,10 +125,14 @@ int main(int argc, char** argv) {
 
 
     if (process_id == 0) {
+        double sum= 0.0;
         // Print the final PageRank scores
         for (f = 0; f < N; f++) {
-            printf("\nPage %d: %lf\n", f + 1, ranks[f]);
+            printf("Page %d: %lf\n", f + 1, ranks[f]);
+            sum+=ranks[f];
         }
+        //printf("Sum %lf\n", sum);
+
     }
 
     for (f = 0; f < N; f++)
