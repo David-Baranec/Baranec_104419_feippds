@@ -106,10 +106,10 @@ int main(int argc, char** argv) {
                     for (l = 0; l < vertices_count; l++) {
                         tmp_out_links_count += graph_matrix[j][l];
                     }
-                    tmp_ranks[i - partition_vertex_index] += ranks[j] / tmp_out_links_count;
+                    tmp_ranks[i - partition_vertex_index] += ranks[j] ;
                 }
             }
-            partition_ranks[i - partition_vertex_index] = ((1.0 - D) + D * tmp_ranks[i - partition_vertex_index])/tmp_out_links_count;
+            partition_ranks[i - partition_vertex_index] = (((1.0 - D)/N) + (D * tmp_ranks[i - partition_vertex_index]/ tmp_out_links_count));
         }
 
         // MPI Allgather - accept data from processes
@@ -128,10 +128,10 @@ int main(int argc, char** argv) {
         double sum= 0.0;
         // Print the final PageRank scores
         for (f = 0; f < N; f++) {
-            printf("Page %d: %lf\n", f + 1, ranks[f]);
+            printf("Page %d: %lf\n", f , ranks[f]);
             sum+=ranks[f];
         }
-        //printf("Sum %lf\n", sum);
+        printf("Sum %lf\n", sum);
 
     }
 
