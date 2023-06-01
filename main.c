@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <mpi.h>
 
-#define N 8
+#define N 23
 #define D 0.85
 
 int* get_counts_send(int processes_count, int vertices_count) {
@@ -62,7 +62,7 @@ int main(int argc, char** argv) {
 
     int matrix[N][N];
     loadMatrixFromFile("input.txt", matrix);
-    iterations_count = 100;
+    iterations_count = 2;
     vertices_count = N;
     graph_matrix = (int**)malloc(N * sizeof(int*));
     for (f = 0; f < N; f++)
@@ -98,6 +98,7 @@ int main(int argc, char** argv) {
                      0, MPI_COMM_WORLD);
 
         // PageRank algorithm
+        int suma=0;
         for (i = partition_vertex_index; i < partition_vertex_index + partition_vertices_count; i++) {
             tmp_ranks[i - partition_vertex_index] = 0.0;
             for (j = 0; j < vertices_count; j++) {
@@ -109,14 +110,24 @@ int main(int argc, char** argv) {
                     tmp_ranks[i - partition_vertex_index] += ranks[j] ;
                 }
             }
+            //wrong formula for Page Rank
             partition_ranks[i - partition_vertex_index] = (((1.0 - D)/N) + (D * tmp_ranks[i - partition_vertex_index]/ tmp_out_links_count));
+
         }
+
 
         // MPI Allgather - accept data from processes
         MPI_Allgatherv(partition_ranks, partition_vertices_count, MPI_DOUBLE,
                        ranks, partitions_counts, partitions_indexes, MPI_DOUBLE,
                        MPI_COMM_WORLD);
+        if (process_id == 0) {
+            // Print the final PageRank scores
+            for (f = 0; f < N; f++) {
+                printf("ITER %d Page %d: %lf\n",k, f , ranks[f]);
+            }
+            //printf("Sum %lf\n", sum);
 
+        }
     }
     free(partitions_counts);
     free(partitions_indexes);
@@ -131,7 +142,7 @@ int main(int argc, char** argv) {
             printf("Page %d: %lf\n", f , ranks[f]);
             sum+=ranks[f];
         }
-        printf("Sum %lf\n", sum);
+        //printf("Sum %lf\n", sum);
 
     }
 
